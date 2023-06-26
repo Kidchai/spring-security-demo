@@ -1,40 +1,39 @@
 package kidchai.springsecuritydemo.config;
 
-import kidchai.springsecuritydemo.security.AuthProviderImpl;
+import kidchai.springsecuritydemo.services.UserWithDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final AuthProviderImpl authProvider;
 
-    @Autowired
-    public SecurityConfig(AuthProviderImpl authProvider) {
-        this.authProvider = authProvider;
+    private final UserWithDetailsService userWithDetailsService;
+
+    public SecurityConfig(UserWithDetailsService userDetailsService) {
+        this.userWithDetailsService = userDetailsService;
     }
 
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userWithDetailsService)
+                .passwordEncoder(NoOpPasswordEncoder.getInstance());
+    }
+
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder managerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        managerBuilder.authenticationProvider(authProvider);
-
-        AuthenticationManager authManager = managerBuilder.build();
-
-        http.authenticationManager(authManager)
-                .authorizeHttpRequests((authz) -> authz
-                        .anyRequest().authenticated()
-                )
-                .formLogin(withDefaults())
-                .httpBasic(withDefaults());
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeRequests(authorize -> authorize
+                        .anyRequest().authenticated())
+                .formLogin(form -> form
+                .defaultSuccessUrl("/hello", true));
         return http.build();
     }
 }
