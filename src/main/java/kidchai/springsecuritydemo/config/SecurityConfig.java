@@ -30,10 +30,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeRequests(authorize -> authorize
+                        .requestMatchers("/auth/login", "/error").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
-                .defaultSuccessUrl("/hello", true));
+                        .loginPage("/auth/login")
+                        .loginProcessingUrl("/process_login")
+                        .defaultSuccessUrl("/hello", true)
+                        .failureForwardUrl("/auth/login?error")
+                );
         return http.build();
     }
 }
