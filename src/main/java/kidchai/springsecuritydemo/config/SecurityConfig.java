@@ -31,14 +31,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .authorizeHttpRequests(requests -> requests
+                .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/login", "/auth/register", "/error").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/process_login")
                         .defaultSuccessUrl("/hello", true)
-                        .failureForwardUrl("/auth/login?error")
+                        .failureForwardUrl("/auth/login?error"))
+                .logout((logout) -> logout
+                        .deleteCookies("remove")
+                        .invalidateHttpSession(false)
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/auth/login")
                 );
         return http.build();
     }
