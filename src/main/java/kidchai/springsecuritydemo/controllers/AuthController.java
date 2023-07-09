@@ -1,5 +1,6 @@
 package kidchai.springsecuritydemo.controllers;
 
+import jakarta.validation.Valid;
 import kidchai.springsecuritydemo.models.User;
 import kidchai.springsecuritydemo.services.RegistrationService;
 import kidchai.springsecuritydemo.util.UserValidator;
@@ -34,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") User user, BindingResult bindingResult) {
+    public String registerUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
         userValidator.validate(user, bindingResult);
 
         if (bindingResult.hasErrors())

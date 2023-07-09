@@ -23,6 +23,7 @@ public class User {
     private int yearOfBirth;
 
     @Column(name = "password")
+    @NotEmpty(message = "Password is required")
     private String password;
 
     @Column(name = "role")
