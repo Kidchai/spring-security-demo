@@ -15,7 +15,7 @@ public class User {
 
     @Column(name = "username")
     @NotEmpty(message = "Username is required")
-    @Size(min = 10, max = 100, message = "Username must be at least 5 characters and no more than 100 characters")
+    @Size(min = 5, max = 100, message = "Username must be at least 5 characters and no more than 100 characters")
     private String username;
 
     @Column(name = "year_of_birth")
@@ -24,6 +24,7 @@ public class User {
 
     @Column(name = "password")
     @NotEmpty(message = "Password is required")
+    @Size(min = 8, max = 100, message = "Password must be at least 8 characters and no more than 100 characters")
     private String password;
 
     @Column(name = "role")
